@@ -1,0 +1,6 @@
+<project name="hxjava" url="https://github.com/waneck/hxjava" license="MIT">
+    <user name="waneck"/>
+    <tag v="java"/>
+    <description>Hxjava is a support library for the Java backend of the haxe compiler. In this first release, all we have are stubs, but there is plan to support automatic java code build, hxcpp/neko CFFI support and the complete java standard library externs.</description>
+    <version name="2.10.0">Initial release, only stubs are created</version>
+</project>
