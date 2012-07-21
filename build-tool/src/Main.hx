@@ -1,6 +1,5 @@
 package ;
 
-import compiler.Javac;
 import input.Reader;
 import neko.Lib;
 import sys.FileSystem;
@@ -43,7 +42,11 @@ class Main
 			f.close();
 			
 			//compile
-			new Javac().compile(data);
+			#if !target_cs
+			new compiler.java.Javac().compile(data);
+			#else
+			new compiler.cs.CSharpCompiler().compile(data);
+			#end
 		}
 		
 		catch (e:Error)

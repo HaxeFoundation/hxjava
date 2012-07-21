@@ -1,7 +1,8 @@
-package compiler;
+package compiler.java;
 import input.Data;
 import sys.FileSystem;
 import sys.io.File;
+import sys.io.Process;
 
 class Javac extends Compiler
 {
@@ -99,7 +100,10 @@ class Javac extends Compiler
 		var suffix = if (Sys.systemName() == "Windows") ".exe" else "";
 		try
 		{
-			var ret = Sys.command(path + "javac" + suffix, ["-version"]);
+			var exe = path + 'javac' + suffix;
+			
+			var cmd = new Process(exe, ["-version"]);
+			var ret = cmd.exitCode();
 			if (ret == 0)
 				return path;
 		}
