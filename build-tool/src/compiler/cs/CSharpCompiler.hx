@@ -39,7 +39,7 @@ class CSharpCompiler extends Compiler
 		
 		var args = ['/nologo', '/optimize' + (debug ? '-' : '+'), '/debug' + (debug ? '+' : '-'), '/unsafe' + (unsafe ? '+' : '-'), '/out:bin/' + this.name + "." + (dll ? "dll" : "exe"), '/target:' + (dll ? "library" : "exe") ];
 		if (data.main != null)
-			args.push('/main:' + data.main);
+			args.push('/main:' + (data.main == "Main" ? "EntryPoint__Main" : data.main));
 		for (res in data.resources)
 			args.push('/res:src' + delim + 'Resources' + delim + res + ",src.Resources." + res);
 		for (file in data.modules)
