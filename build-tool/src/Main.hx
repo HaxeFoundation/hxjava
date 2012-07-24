@@ -87,7 +87,13 @@ class Main
 			switch(e)
 			{
 			case CompilerNotFound:
-				Sys.println("Native compiler not found. Please make sure it is installed or its path is set correctly");
+				#if target_java
+				Sys.println("Java compiler not found. Please make sure JDK is installed. If it is, please add an environment variable called JAVA_HOME that points to the JDK install location or add the bin subfolder to your PATH environment.");
+				#elseif target_cs
+				Sys.println("C# compiler not found. Please make sure either Visual Studio or mono is installed or they are reachable by their path");
+				#else
+				Sys.println("Native compiler not found. Please make sure it is installed and its path is set correctly");
+				#end
 			case BuildFailed:
 				Sys.println("Native compilation failed");
 			}

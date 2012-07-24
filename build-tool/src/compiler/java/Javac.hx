@@ -4,6 +4,8 @@ import sys.FileSystem;
 import sys.io.File;
 import sys.io.Process;
 
+using Lambda;
+
 class Javac extends Compiler
 {
 	var name:String;
@@ -74,13 +76,53 @@ class Javac extends Compiler
 		{
 			var home = Sys.getEnv("JAVA_HOME");
 			if (home != null)
+			{
 				path = tryPath(home);
+				if (path == null)
+					path = tryPath(home + "/bin/");
+			}
+			
 		}
 		
 		if (path == null)
 		{
 			if (Sys.systemName() == "Windows")
-				path = tryPath("C:\\Program Files\\java\\jdk1.7.0\\bin\\");
+			{
+				var pfiles = [Sys.getEnv("ProgramFiles")];
+				if (pfiles[0] == null) {
+					pfiles[0] = "C:\\Program Files";
+				} else {
+					var pf = Sys.getEnv("ProgramFiles(x86)");
+					if (pf != null && pf == pfiles[0])
+					{
+						pfiles[1] = pf.split(" (x86)")[0];
+					}
+				}
+				
+				for (pfile in pfiles)
+				{
+					var java = pfile + "\\java";
+					
+					if (FileSystem.exists(java) && FileSystem.isDirectory(java))
+					{
+						var regex = ~/jdk(\d+\.)+/;
+						var bestPath = null;
+						for (file in FileSystem.readDirectory(java))
+						{
+							if (regex.match(file))
+							{
+								var p = regex.matched(1).split(".").map(function(v) return Std.parseInt(v));
+								if (bestPath == null || isMostRecent(p, bestPath))
+								{
+									path = tryPath(java + '\\' + file + '\\bin\\');
+									bestPath = p;
+								}
+							}
+						}
+					}
+				}
+				
+			}
 		}
 		
 		if (path == null)
@@ -93,6 +135,22 @@ class Javac extends Compiler
 		
 		if (ret != 0)
 			throw Error.BuildFailed;
+	}
+	
+	static function isMostRecent(base:List<Int>, than:List<Int>)
+	{
+		var b = base.iterator();
+		var t = than.iterator();
+		
+		while (b.hasNext() && t.hasNext())
+		{
+			var b = b.next();
+			var t = t.next();
+			if (b < t)
+				return false;
+		}
+		
+		return true;
 	}
 	
 	function tryPath(path:String):String
