@@ -1,4 +1,5 @@
 package compiler.java;
+import haxe.io.Path;
 import input.Data;
 import sys.FileSystem;
 import sys.io.File;
@@ -64,10 +65,18 @@ class Javac extends Compiler
 		else
 			params.push("-g:none");
 		
+		var libdir = Tools.addPath(Path.directory(cmd.output), "lib");
+		if (data.libs.length > 0 && !FileSystem.exists(libdir))
+		{
+			FileSystem.createDirectory(libdir);
+		}
+		
 		for (lib in data.libs)
 		{
 			params.push("-classpath");
-			params.push(Tools.addPath(data.baseDir, lib));
+			params.push(libdir + "/" + Path.withoutDirectory(lib));
+			
+			Tools.copyTree(Tools.addPath(data.baseDir, lib), libdir + "/" + Path.withoutDirectory(lib));
 		}
 	}
 	
@@ -75,10 +84,29 @@ class Javac extends Compiler
 	{
 		try
 		{
+			var contents = new StringBuf();
+			
 			if (data.main != null)
 			{
-				File.saveContent("mainClass", "Main-Class: " + data.main + "\n\r");
-				Sys.command(path + "jar", ["cmf", "mainClass", this.cmd.output + ".jar", "-C", "obj/", "."]);
+				contents.add("Main-Class: " + data.main + "\n");
+			}
+			if (data.libs.length > 0)
+			{
+				contents.add("Class-Path:");
+				for (lib in data.libs)
+				{
+					contents.add(" ");
+					contents.add("lib/" + Path.withoutDirectory(lib));
+				}
+				
+				contents.add("\n");
+			}
+			
+			var c = contents.toString();
+			if (c.length != 0)
+			{
+				File.saveContent("manifest", c);
+				Sys.command(path + "jar", ["cmf", "manifest", this.cmd.output + ".jar", "-C", "obj/", "."]);
 			} else {
 				Sys.command(path + "jar", ["cf", this.cmd.output + ".jar", "-C", "obj/", "."]);
 			}
