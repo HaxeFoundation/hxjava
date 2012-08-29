@@ -13,4 +13,5 @@ typedef Data =
 	var modules:Array<{ path:String, types:Array<ModuleType> }>;
 	var main:Null<String>;
 	var resources:Array<String>;
+	var libs:Array<String>;
 }

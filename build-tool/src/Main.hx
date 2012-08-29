@@ -1,5 +1,6 @@
 package ;
 
+import haxe.io.Path;
 import input.Reader;
 import neko.Lib;
 import sys.FileSystem;
@@ -20,13 +21,15 @@ class Main
 		try
 		{
 			//pre-process args:
-			var cmd = new CommandLine();
+			var cmd = new CommandLine(#if target_cs "hxcs" #else "hxjava" #end);
 			var args = Sys.args();
 			var last = args[args.length - 1];
+			
+			var cwd = Sys.getCwd();
 			if (last != null && FileSystem.exists(last = last.substr(0,last.length-1))) //was called from haxelib
 			{
-				Sys.setCwd(last);
 				args.pop();
+				Sys.setCwd(cwd = last);
 			}
 			
 			//get options
@@ -36,16 +39,19 @@ class Main
 			
 			//read input
 			if (!FileSystem.exists(target = cmd.target))
-				throw Error.InexistentInput(cmd.target);
-			var f = File.read(cmd.target);
+				throw Error.InexistentInput(target);
+			var f = File.read(target);
 			var data = new Reader(f).read();
 			f.close();
 			
+			data.baseDir = Tools.addPath(cwd, data.baseDir);
+			Sys.setCwd(Path.directory(Tools.addPath(cwd, cmd.target)));
+			
 			//compile
 			#if !target_cs
-			new compiler.java.Javac().compile(data);
+			new compiler.java.Javac(cmd).compile(data);
 			#else
-			new compiler.cs.CSharpCompiler().compile(data);
+			new compiler.cs.CSharpCompiler(cmd).compile(data);
 			#end
 		}
 		
@@ -63,7 +69,7 @@ class Main
 				Sys.println("No target defined");
 			}
 			
-			Sys.println(new CommandLine().getOptions());
+			Sys.println(new CommandLine(#if target_cs "hxcs" #else "hxjava" #end).getOptions());
 			
 			Sys.exit(1);
 		}

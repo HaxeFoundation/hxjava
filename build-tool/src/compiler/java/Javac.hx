@@ -8,30 +8,44 @@ using Lambda;
 
 class Javac extends Compiler
 {
-	var name:String;
 	var path:String;
+	var cmd:CommandLine;
 	
-	public function new() 
+	public function new(cmd:CommandLine) 
 	{
-		
+		this.cmd = cmd;
 	}
 	
 	override public function compile(data:Data):Void
 	{
-		var name = Sys.getCwd();
-		name = name.substr(0, name.length - 1);
-		if (name.lastIndexOf("\\") > name.lastIndexOf("/"))
-			this.name = name.split("\\").pop();
-		else
-			this.name = name.split("/").pop();
+		if (cmd.output == null)
+		{
+			var name = Sys.getCwd();
+			name = name.substr(0, name.length - 1);
+			if (name.lastIndexOf("\\") > name.lastIndexOf("/"))
+				cmd.output = name.split("\\").pop();
+			else
+				cmd.output = name.split("/").pop();
+		} else {
+			cmd.output = Tools.addPath(data.baseDir, cmd.output);
+		}
 		
 		if (!FileSystem.exists("obj"))
 			FileSystem.createDirectory("obj");
-		var params = ["-sourcepath", "src", "-classpath", "obj", "-d", "obj"];
+		var params = ["-sourcepath", "src", "-d", "obj"];
 		//handle parameters
 		changeParams(data, params);
 		//add main target
-		params.push("src/" + data.main.split(".").join("/") + ".java");
+		for (module in data.modules)
+		{
+			for (t in module.types)
+			{
+				switch(t)
+				{
+					case MEnum(p), MClass(p): params.push("src/" + p.split(".").join("/") + ".java");
+				}
+			}
+		}
 		callJavac(params);
 		//now copy the resources if any
 		for (res in FileSystem.readDirectory("src"))
@@ -49,6 +63,12 @@ class Javac extends Compiler
 			params.push("-g");
 		else
 			params.push("-g:none");
+		
+		for (lib in data.libs)
+		{
+			params.push("-classpath");
+			params.push(Tools.addPath(data.baseDir, lib));
+		}
 	}
 	
 	function makeJar(data:Data)
@@ -58,9 +78,9 @@ class Javac extends Compiler
 			if (data.main != null)
 			{
 				File.saveContent("mainClass", "Main-Class: " + data.main + "\n\r");
-				Sys.command(path + "jar", ["cmf", "mainClass", this.name + ".jar", "-C", "obj/", "."]);
+				Sys.command(path + "jar", ["cmf", "mainClass", this.cmd.output + ".jar", "-C", "obj/", "."]);
 			} else {
-				Sys.command(path + "jar", ["cf", this.name + ".jar", "-C", "obj/", "."]);
+				Sys.command(path + "jar", ["cf", this.cmd.output + ".jar", "-C", "obj/", "."]);
 			}
 		}
 		catch (e:Dynamic)

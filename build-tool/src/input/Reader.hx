@@ -49,7 +49,12 @@ class Reader
 			{
 				ret.defines.set(line.rtrim(), true);
 			}
-			
+		case "libs":
+			var line;
+			while ( (line = getLine()) != null)
+			{
+				ret.libs.push(line.rtrim());
+			}
 		case "modules":
 			var line, lastPath = null, lastArr:Array<ModuleType> = null;
 			while ( (line = getLine()) != null)
@@ -94,7 +99,8 @@ class Reader
 			defines: new Hash(),
 			modules: [],
 			main: null,
-			resources: []
+			resources: [],
+			libs: []
 		};
 		
 		var i = i;

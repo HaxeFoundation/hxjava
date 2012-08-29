@@ -5,10 +5,13 @@ class CommandLine
 	//Required: Where to build
 	public var target:String;
 	public var version:Int;
+	public var output:Null<String>;
 	
-	public function new() 
+	private var name:String;
+	
+	public function new(name:String) 
 	{
-		
+		this.name = name;
 	}
 	
 	public function process(args:Array<String>, arg:Int = 0)
@@ -24,9 +27,12 @@ class CommandLine
 				if (ver == null)
 					throw Error.BadFormat("--haxe-version", args[arg - 1]);
 				this.version = ver;
+			case "--out":
+				this.output = args[arg++];
+				if (output == null)
+					throw Error.BadFormat("--out", null);
 			default:
-				if (arg != len) //seems like haxelib adds an argument at the end
-					throw Error.UnknownOption(args[arg - 1]);
+				throw Error.UnknownOption(args[arg - 1]);
 			}
 		}
 	}
@@ -34,9 +40,10 @@ class CommandLine
 	public function getOptions()
 	{
 		return
-		' Usage : haxelib run hxjava buildFile.txt [?... options]\n' +
+		' Usage : haxelib run '+ name +' buildFile.txt [?... options]\n' +
 		' Options :\n' +
 		'  --haxe-version <version> : sets what baseline haxe version was it compiled with\n';
+		'  --out <filename> : sets the output file path\n';
 	}
 	
 }

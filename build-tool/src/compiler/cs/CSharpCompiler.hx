@@ -21,9 +21,11 @@ class CSharpCompiler extends Compiler
 	
 	public var data(default, null):Data;
 	
-	public function new() 
+	var cmd:CommandLine;
+	
+	public function new(cmd:CommandLine) 
 	{
-		
+		this.cmd = cmd;
 	}
 	
 	override public function compile(data:Data):Void
