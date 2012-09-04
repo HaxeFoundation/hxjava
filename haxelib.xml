@@ -2,5 +2,5 @@
     <user name="waneck"/>
     <tag v="java"/>
     <description>Hxjava is a support library for the Java backend of the haxe compiler. There is plan to support automatic java code build, hxcpp/neko CFFI support and the complete java standard library externs.</description>
-    <version name="2.10.1">First version of build tool</version>
+    <version name="2.10.2">Added -java-lib support; Better javac detection</version>
 </project>
