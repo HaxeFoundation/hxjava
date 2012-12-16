@@ -11,12 +11,12 @@ class Javac extends Compiler
 {
 	var path:String;
 	var cmd:CommandLine;
-	
-	public function new(cmd:CommandLine) 
+
+	public function new(cmd:CommandLine)
 	{
 		this.cmd = cmd;
 	}
-	
+
 	override public function compile(data:Data):Void
 	{
 		if (cmd.output == null)
@@ -30,12 +30,19 @@ class Javac extends Compiler
 		} else {
 			cmd.output = Tools.addPath(data.baseDir, cmd.output);
 		}
-		
+
 		if (!FileSystem.exists("obj"))
 			FileSystem.createDirectory("obj");
 		var params = ["-sourcepath", "src", "-d", "obj"];
 		//handle parameters
 		changeParams(data, params);
+
+		var outFile = null;
+		if (!data.defines.exists("LONG_COMMAND_LINE"))
+		{
+			outFile = sys.io.File.write("cmd");
+			params.push("@cmd");
+		}
 		//add main target
 		for (module in data.modules)
 		{
@@ -43,10 +50,18 @@ class Javac extends Compiler
 			{
 				switch(t)
 				{
-					case MEnum(p), MClass(p): params.push("src/" + p.split(".").join("/") + ".java");
+					case MEnum(p), MClass(p):
+						var path = "src/" + p.split(".").join("/") + ".java";
+						if (outFile != null)
+							outFile.writeString(path + "\n");
+						else
+							params.push(path);
 				}
 			}
 		}
+
+		if (outFile != null)
+			outFile.close();
 		callJavac(params);
 		//now copy the resources if any
 		for (res in FileSystem.readDirectory("src"))
@@ -54,38 +69,38 @@ class Javac extends Compiler
 			if (!FileSystem.isDirectory("src/" + res))
 				Tools.copy("src/" + res, "obj/" + res);
 		}
-		
+
 		makeJar(data);
 	}
-	
+
 	function changeParams(data:Data, params:Array<String>)
 	{
 		if (data.defines.exists("debug"))
 			params.push("-g");
 		else
 			params.push("-g:none");
-		
+
 		var libdir = Tools.addPath(Path.directory(cmd.output), "lib");
 		if (data.libs.length > 0 && !FileSystem.exists(libdir))
 		{
 			FileSystem.createDirectory(libdir);
 		}
-		
+
 		for (lib in data.libs)
 		{
 			params.push("-classpath");
 			params.push(libdir + "/" + Path.withoutDirectory(lib));
-			
+
 			Tools.copyTree(Tools.addPath(data.baseDir, lib), libdir + "/" + Path.withoutDirectory(lib));
 		}
 	}
-	
+
 	function makeJar(data:Data)
 	{
 		try
 		{
 			var contents = new StringBuf();
-			
+
 			if (data.main != null)
 			{
 				contents.add("Main-Class: " + data.main + "\n");
@@ -98,10 +113,10 @@ class Javac extends Compiler
 					contents.add(" ");
 					contents.add("lib/" + Path.withoutDirectory(lib));
 				}
-				
+
 				contents.add("\n");
 			}
-			
+
 			var c = contents.toString();
 			if (c.length != 0)
 			{
@@ -116,7 +131,7 @@ class Javac extends Compiler
 			Sys.println("Could not find jar packaging");
 		}
 	}
-	
+
 	function callJavac(params:Array<String>)
 	{
 		path = tryPath("");
@@ -129,9 +144,9 @@ class Javac extends Compiler
 				if (path == null)
 					path = tryPath(home + "/bin/");
 			}
-			
+
 		}
-		
+
 		if (path == null)
 		{
 			if (Sys.systemName() == "Windows")
@@ -146,11 +161,11 @@ class Javac extends Compiler
 						pfiles[1] = pf.split(" (x86)")[0];
 					}
 				}
-				
+
 				for (pfile in pfiles)
 				{
 					var java = pfile + "\\java";
-					
+
 					if (FileSystem.exists(java) && FileSystem.isDirectory(java))
 					{
 						var regex = ~/jdk(\d+\.)+/;
@@ -169,27 +184,28 @@ class Javac extends Compiler
 						}
 					}
 				}
-				
+
 			}
 		}
-		
+
 		if (path == null)
 		{
 			throw Error.CompilerNotFound;
 		}
-		
+
 		var suffix = if (Sys.systemName() == "Windows") ".exe" else "";
+		Sys.println(path + "javac" + suffix + ' "' + params.join('" "') + '"');
 		var ret = Sys.command(path + "javac" + suffix, params);
-		
+
 		if (ret != 0)
 			throw Error.BuildFailed;
 	}
-	
+
 	static function isMostRecent(base:List<Int>, than:List<Int>)
 	{
 		var b = base.iterator();
 		var t = than.iterator();
-		
+
 		while (b.hasNext() && t.hasNext())
 		{
 			var b = b.next();
@@ -197,25 +213,25 @@ class Javac extends Compiler
 			if (b < t)
 				return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	function tryPath(path:String):String
 	{
 		var suffix = if (Sys.systemName() == "Windows") ".exe" else "";
 		try
 		{
 			var exe = path + 'javac' + suffix;
-			
+
 			var cmd = new Process(exe, ["-version"]);
 			var ret = cmd.exitCode();
 			if (ret == 0)
 				return path;
 		}
 		catch (e:Dynamic) { }
-		
+
 		return null;
 	}
-	
+
 }
