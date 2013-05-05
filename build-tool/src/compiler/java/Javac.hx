@@ -174,7 +174,7 @@ class Javac extends Compiler
 						{
 							if (regex.match(file))
 							{
-								var p = regex.matched(1).split(".").map(function(v) return Std.parseInt(v));
+								var p = regex.matched(1).split(".").map(function(v):Int return Std.parseInt(v));
 								if (bestPath == null || isMostRecent(p, bestPath))
 								{
 									path = tryPath(java + '\\' + file + '\\bin\\');
@@ -201,7 +201,7 @@ class Javac extends Compiler
 			throw Error.BuildFailed;
 	}
 
-	static function isMostRecent(base:List<Int>, than:List<Int>)
+	static function isMostRecent(base:Array<Int>, than:Array<Int>)
 	{
 		var b = base.iterator();
 		var t = than.iterator();
