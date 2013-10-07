@@ -86,13 +86,21 @@ class Javac extends Compiler
 			FileSystem.createDirectory(libdir);
 		}
 
-		for (lib in data.libs)
-		{
-			params.push("-classpath");
-			params.push(libdir + "/" + Path.withoutDirectory(lib));
 
-			Tools.copyTree(Tools.addPath(data.baseDir, lib), libdir + "/" + Path.withoutDirectory(lib));
-		}
+        	if (data.libs != null && data.libs.length > 0)
+        	{
+                	params.push("-classpath");
+                	params.push( Lambda.map(data.libs, 
+                                	function(lib) return libdir + "/" + Path.withoutDirectory(lib)).join(Sys.systemName() == "Windows" ? ";" : ":") 
+                            		);
+                	for (lib in data.libs)
+                	{
+                        	Tools.copyTree(
+                            		Tools.addPath(data.baseDir, lib), libdir + "/" + Path.withoutDirectory(lib)
+                        	);
+               		 }      
+        	}
+    
 	}
 
 	function makeJar(data:Data)
