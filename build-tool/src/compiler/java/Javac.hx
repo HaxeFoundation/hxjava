@@ -91,7 +91,7 @@ class Javac extends Compiler
         	{
                 	params.push("-classpath");
                 	params.push( Lambda.map(data.libs, 
-                                	function(lib) return libdir + "/" + Path.withoutDirectory(lib)).join(":") 
+                                	function(lib) return libdir + "/" + Path.withoutDirectory(lib)).join(Sys.systemName() == "Windows" ? ";" : ":") 
                             		);
                 	for (lib in data.libs)
                 	{
