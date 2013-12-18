@@ -63,11 +63,15 @@ class Javac extends Compiler
 		if (outFile != null)
 			outFile.close();
 		callJavac(params);
+
 		//now copy the resources if any
-		for (res in FileSystem.readDirectory("src"))
+		for (res in data.resources)
 		{
-			if (!FileSystem.isDirectory("src/" + res))
-				Tools.copy("src/" + res, "obj/" + res);
+			var targetPath = "obj/" + res;
+			var targetDir = Path.directory(targetPath);
+			if (!FileSystem.exists(targetDir))
+				FileSystem.createDirectory(targetDir);
+			Tools.copy("src/" + res, targetPath);
 		}
 
 		makeJar(data);
