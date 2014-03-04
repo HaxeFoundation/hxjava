@@ -4,7 +4,7 @@
 	"license":"Public",
 	"tags":["java","core"],
 	"description":"Support library for the Java backend of the Haxe compiler",
-	"version":"3.0.0-rc.1",
-	"releasenote":"Added Java standard lib JAR file",
+	"version":"3.1.0",
+	"releasenote":"Update to haxe 3.1 release and changed output file to a better naming scheme",
 	"contributors":["waneck"]
 }

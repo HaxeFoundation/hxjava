@@ -19,14 +19,29 @@ class Javac extends Compiler
 
 	override public function compile(data:Data):Void
 	{
-		if (cmd.output == null)
+		var name = if (data.main != null)
+		{
+			var idx = data.main.lastIndexOf(".");
+			if (idx != -1)
+				data.main.substr(idx + 1);
+			else
+				data.main;
+		}
+		else
 		{
 			var name = Sys.getCwd();
 			name = name.substr(0, name.length - 1);
 			if (name.lastIndexOf("\\") > name.lastIndexOf("/"))
-				cmd.output = name.split("\\").pop();
+				name = name.split("\\").pop();
 			else
-				cmd.output = name.split("/").pop();
+				name = name.split("/").pop();
+		}
+		if (data.defines.exists("debug"))
+			name += "-Debug";
+
+		if (cmd.output == null)
+		{
+			cmd.output = name;
 		} else {
 			cmd.output = Tools.addPath(data.baseDir, cmd.output);
 		}
