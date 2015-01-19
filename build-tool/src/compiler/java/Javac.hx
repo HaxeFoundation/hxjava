@@ -51,12 +51,21 @@ class Javac extends Compiler
 		var params = ["-sourcepath", "src", "-d", "obj"];
 		//handle parameters
 		changeParams(data, params);
-		
-		//android sane defaults 
+
+		//android sane defaults
 		if (data.defines.exists("java-android")) {
-			params.push('-source'); params.push('1.5');
-			params.push('-target'); params.push('1.5');
+			if (data.opts.indexOf('-source') < 0)
+			{
+				params.push('-source'); params.push('1.5');
+			}
+			if (data.opts.indexOf('-target') < 0)
+			{
+				params.push('-target'); params.push('1.5');
+			}
 		}
+
+		for (opt in data.opts)
+			params.push(opt);
 
 		var outFile = null;
 		if (!data.defines.exists("LONG_COMMAND_LINE"))
