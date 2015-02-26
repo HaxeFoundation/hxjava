@@ -97,6 +97,7 @@ class Javac extends Compiler
 		//now copy the resources if any
 		for (res in data.resources)
 		{
+			res = haxe.crypto.Base64.encode(haxe.io.Bytes.ofString(res));
 			var targetPath = "obj/" + res;
 			var targetDir = Path.directory(targetPath);
 			if (!FileSystem.exists(targetDir))
