@@ -97,7 +97,7 @@ class Javac extends Compiler
 		//now copy the resources if any
 		for (res in data.resources)
 		{
-			res = haxe.crypto.Base64.encode(haxe.io.Bytes.ofString(res));
+			res = escapeRes(res);
 			var targetPath = "obj/" + res;
 			var targetDir = Path.directory(targetPath);
 			if (!FileSystem.exists(targetDir))
@@ -106,6 +106,12 @@ class Javac extends Compiler
 		}
 
 		makeJar(data);
+	}
+
+	private static function escapeRes(name:String)
+	{
+		var regex = ~/[^A-Za-z0-9_\/]/g;
+		return regex.map(name, function(v) return '-x' + v.matched(0).charCodeAt(0));
 	}
 
 	function changeParams(data:Data, params:Array<String>)
