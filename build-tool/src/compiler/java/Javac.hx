@@ -154,11 +154,8 @@ class Javac extends Compiler
 				contents.add("Class-Path:");
 				for (lib in data.libs)
 				{
-					contents.add(" ");
-					contents.add("lib/" + Path.withoutDirectory(lib));
+					contents.add(" lib/" + Path.withoutDirectory(lib) + "\n");
 				}
-
-				contents.add("\n");
 			}
 
 			var c = contents.toString();
