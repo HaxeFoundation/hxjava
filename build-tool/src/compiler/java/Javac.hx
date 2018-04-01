@@ -267,7 +267,7 @@ class Javac extends Compiler
 
 			var cmd = new Process(exe, ["-version"]);
 			var ret = cmd.exitCode();
-			if (ret == 0)
+			if (ret != 127)
 				return path;
 		}
 		catch (e:Dynamic) { }
