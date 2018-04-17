@@ -265,7 +265,7 @@ class Javac extends Compiler
 		{
 			var exe = path + 'javac' + suffix;
 
-			var cmd = new Process(exe, ["-version"]);
+			var cmd = new Process(exe, ["-help"]);
 			var ret = cmd.exitCode();
 			if (ret == 0)
 				return path;
