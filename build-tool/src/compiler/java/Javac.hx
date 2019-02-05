@@ -126,9 +126,7 @@ class Javac extends Compiler
 		if (data.libs != null && data.libs.length > 0)
 		{
 			params.push("-classpath");
-			params.push( Lambda.map(data.libs,
-						function(lib) return libdir + "/" + Path.withoutDirectory(lib)).join(Sys.systemName() == "Windows" ? ";" : ":")
-					);
+			params.push(libdir + "/*");
 			for (lib in data.libs)
 			{
 				Tools.copyTree(
