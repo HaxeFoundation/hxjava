@@ -65,7 +65,6 @@ final class Main {
 }
 
 final class MyClassVisitor extends ClassVisitor {
-	var isInterface:Bool = false;
 
 	public function new(visitor:ClassVisitor) {
 		super(Opcodes_Statics.ASM7, visitor);
@@ -74,13 +73,15 @@ final class MyClassVisitor extends ClassVisitor {
 	@:overload
 	override function visit(version:Int, access:Int, name:String, signature:String, superName:String, interfaces:NativeArray<String>):Void {
 		cv.visit(version, access, name, signature, superName, interfaces);
-		isInterface = (access & Opcodes_Statics.ACC_INTERFACE) != 0;
 	}
 
+	/**
+	 * Starts the visit of the method's code, if any (i.e. non abstract method).
+	 */
 	@:overload
 	override function visitMethod(access:Int, name:String, desc:String, signature:String, exceptions:NativeArray<String>):MethodVisitor {
 		final mv:MethodVisitor = cv.visitMethod(access, name, desc, signature, exceptions);
-		if (!isInterface && mv != null) {
+		if (mv != null) {
 			return new MyMethodVisitor(mv);
 		}
 		return mv;
@@ -102,7 +103,7 @@ final class MyMethodVisitor extends MethodVisitor {
 		// target.visitInsn(Opcodes_Statics.DUP);
 		target.visitMethodInsn(Opcodes_Statics.INVOKESPECIAL, "java/io/IOException", "<init>", "()V", false);
 		target.visitInsn(Opcodes_Statics.ATHROW);
-		target.visitMaxs(2, 0);
+		target.visitMaxs(1, 0);
 		target.visitEnd();
 	}
 }
