@@ -16,7 +16,7 @@ using StringTools;
 
 /**
  * HOW TO USE:
- * 
+ *
  * 1) Unzip JAR file into some folder. For example "jar_content";
  * 2) Run `java -jar Main.jar jar_content`;
  * 3) Pick up generated `hxjava-std.jar`.
@@ -41,13 +41,11 @@ final class Main {
 							stream.write(writer.toByteArray());
 							Sys.sleep(0.001);
 						}
-					}
-					else {
+					} else {
 						process(haxe.io.Path.addTrailingSlash(path));
 					}
 				}
-			}
-			else {
+			} else {
 				println('Wrong path. $dir is not exists');
 			}
 		}
@@ -59,8 +57,7 @@ final class Main {
 			println("\nPacking jar...\n");
 			if (Sys.command('jar', ["cvf", "hxjava-std.jar", "-C", dir, "."]) == 0) {
 				println("\nDone!\n");
-			}
-			else {
+			} else {
 				println("Oops, something went wrong.");
 			}
 		}
@@ -101,8 +98,8 @@ final class MyMethodVisitor extends MethodVisitor {
 	@:overload
 	override function visitCode() {
 		target.visitCode();
-		//target.visitTypeInsn(Opcodes_Statics.NEW, "java/io/IOException");
-		//target.visitInsn(Opcodes_Statics.DUP);
+		// target.visitTypeInsn(Opcodes_Statics.NEW, "java/io/IOException");
+		// target.visitInsn(Opcodes_Statics.DUP);
 		target.visitMethodInsn(Opcodes_Statics.INVOKESPECIAL, "java/io/IOException", "<init>", "()V", false);
 		target.visitInsn(Opcodes_Statics.ATHROW);
 		target.visitMaxs(2, 0);
