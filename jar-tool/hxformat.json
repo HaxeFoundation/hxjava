@@ -1,0 +1,82 @@
+{
+	"indentation": {
+		"tabWidth": 2,
+		"trailingWhitespace": false,
+		"character": "\t"
+	},
+	"whitespace": {
+		"ternaryPolicy": "around",
+		"arrowFunctionsPolicy": "around",
+		"functionTypeHaxe3Policy": "around",
+		"functionTypeHaxe4Policy": "around",
+		"formatStringInterpolation": true,
+		"parenConfig": {
+			"funcParamParens": {
+				"openingPolicy": "none"
+			},
+			"anonFuncParamParens": {
+				"openingPolicy": "none"
+			}
+		},
+		"addLineCommentSpace": false
+	},
+	"sameLine": {
+		"ifElse": "next",
+		"elseIf": "same",
+		"elseBody": "next",
+		"ifBody": "next",
+		"expressionIfWithBlocks": false,
+		"tryCatch": "next",
+		"catchBody": "next",
+		"functionBody": "next",
+		"caseBody": "same",
+		"forBody": "same",
+		"anonFunctionBody": "next",
+		"doWhile": "same"
+	},
+	"emptyLines": {
+		"afterBlocks": "keep",
+		"finalNewline": true
+	},
+	"lineEnds": {
+		"emptyCurly": "break",
+		"sharp": "after",
+		"caseColon": "none",
+		"metadataFunction": "none",
+		"metadataOther": "none",
+		"metadataType": "none",
+		"metadataVar": "afterLast"
+	},
+	"wrapping": {
+		"callParameter": {
+			"rules": [
+				{
+					"type": "equalNumber",
+					"additionalIndent": 0,
+					"location": "afterLast",
+					"conditions": [
+						{
+							"cond": "itemCount >= n",
+							"value": 0
+						}
+					]
+				}
+			]
+		},
+		"methodChain": {
+			"rules": [
+				{
+					"type": "keep",
+					"additionalIndent": 0,
+					"location": "afterLast",
+					"conditions": [
+						{
+							"cond": "itemCount >= n",
+							"value": 0
+						}
+					]
+				}
+			]
+		}
+	}
+}
