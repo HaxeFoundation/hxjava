@@ -80,7 +80,7 @@ final class MyClassVisitor extends ClassVisitor {
 	@:overload
 	override function visitMethod(access:Int, name:String, desc:String, signature:String, exceptions:NativeArray<String>):MethodVisitor {
 		final mv:MethodVisitor = cv.visitMethod(access, name, desc, signature, exceptions);
-		if (!isInterface && mv != null && name != "<clinit>") {
+		if (!isInterface && mv != null) {
 			return new MyMethodVisitor(mv);
 		}
 		return mv;
