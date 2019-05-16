@@ -1,5 +1,7 @@
 package;
 
+import haxe.io.Path;
+import sys.FileSystem;
 import java.StdTypes.Int8;
 import java.NativeArray;
 import java.io.FileOutputStream;
@@ -24,25 +26,24 @@ using StringTools;
 final class Main {
 	static function main():Void {
 		function process(dir:String) {
-			if (sys.FileSystem.exists(dir)) {
-				for (file in sys.FileSystem.readDirectory(dir)) {
-					final path = haxe.io.Path.join([dir, file]);
-					if (!sys.FileSystem.isDirectory(path)) {
+			if (FileSystem.exists(dir)) {
+				for (file in FileSystem.readDirectory(dir)) {
+					final path = Path.join([dir, file]);
+					if (!FileSystem.isDirectory(path)) {
 						if (path.endsWith(".class")) {
 							println('Process $path... ');
 							final obj:NativeArray<Int8> = Files.readAllBytes(new File(path).toPath());
 							final reader = new ClassReader(obj);
-							final writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-							final visitor = new MyClassVisitor(writer);
+							final writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
+							final visitor = new CustomClassVisitor(writer);
 
 							reader.accept(visitor, 0);
 
 							final stream = new FileOutputStream(path);
 							stream.write(writer.toByteArray());
-							Sys.sleep(0.001);
 						}
 					} else {
-						process(haxe.io.Path.addTrailingSlash(path));
+						process(Path.addTrailingSlash(path));
 					}
 				}
 			} else {
@@ -64,7 +65,8 @@ final class Main {
 	}
 }
 
-final class MyClassVisitor extends ClassVisitor {
+@:nativeGen
+class CustomClassVisitor extends ClassVisitor {
 
 	public function new(visitor:ClassVisitor) {
 		super(Opcodes_Statics.ASM7, visitor);
@@ -82,13 +84,14 @@ final class MyClassVisitor extends ClassVisitor {
 	override function visitMethod(access:Int, name:String, desc:String, signature:String, exceptions:NativeArray<String>):MethodVisitor {
 		final mv:MethodVisitor = cv.visitMethod(access, name, desc, signature, exceptions);
 		if (mv != null) {
-			return new MyMethodVisitor(mv);
+			return new CustomMethodVisitor(mv);
 		}
 		return mv;
 	}
 }
 
-final class MyMethodVisitor extends MethodVisitor {
+@:nativeGen
+class CustomMethodVisitor extends MethodVisitor {
 	final target:MethodVisitor;
 
 	public function new(target:MethodVisitor) {
@@ -99,11 +102,7 @@ final class MyMethodVisitor extends MethodVisitor {
 	@:overload
 	override function visitCode() {
 		target.visitCode();
-		// target.visitTypeInsn(Opcodes_Statics.NEW, "java/io/IOException");
-		// target.visitInsn(Opcodes_Statics.DUP);
-		target.visitMethodInsn(Opcodes_Statics.INVOKESPECIAL, "java/io/IOException", "<init>", "()V", false);
-		target.visitInsn(Opcodes_Statics.ATHROW);
-		target.visitMaxs(1, 0);
+		target.visitMaxs(0, 0);
 		target.visitEnd();
 	}
 }
