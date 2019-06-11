@@ -4,7 +4,7 @@
 	"license":"Public",
 	"tags":["java","core"],
 	"description":"Support library for the Java backend of the Haxe compiler",
-	"version":"3.2.0",
-	"releasenote":"Update to haxe 3.2 release and introduced --feature-level and extra compiler args",
-	"contributors":["waneck"]
+	"version":"4.0.0-alpha",
+	"releasenote":"Update to Java 8",
+	"contributors":["waneck", "HaxeFoundation"]
 }
