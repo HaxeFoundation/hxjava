@@ -1,6 +1,6 @@
 {
 	"name":"hxjava",
-	"url":"https://github.com/waneck/hxjava",
+	"url":"https://github.com/HaxeFoundation/hxjava",
 	"license":"Public",
 	"tags":["java","core"],
 	"description":"Support library for the Java backend of the Haxe compiler",
