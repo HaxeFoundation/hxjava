@@ -1,18 +1,19 @@
 package;
 
 import haxe.io.Path;
-import sys.FileSystem;
-import java.StdTypes.Int8;
+import java.Lib.println;
 import java.NativeArray;
-import java.io.FileOutputStream;
+import java.StdTypes.Int8;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.file.Files;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes.Opcodes_Statics;
-import java.Lib.println;
+import sys.FileSystem;
 
 using StringTools;
 
@@ -82,7 +83,7 @@ class CustomClassVisitor extends ClassVisitor {
 	 */
 	@:overload
 	override function visitMethod(access:Int, name:String, desc:String, signature:String, exceptions:NativeArray<String>):MethodVisitor {
-		final mv:MethodVisitor = cv.visitMethod(access, name, desc, signature, exceptions);
+		final mv = cv.visitMethod(access, name, desc, signature, exceptions);
 		if (mv != null) {
 			return new CustomMethodVisitor(mv);
 		}
@@ -97,6 +98,11 @@ class CustomMethodVisitor extends MethodVisitor {
 	public function new(target:MethodVisitor) {
 		super(Opcodes_Statics.ASM7, null);
 		this.target = target;
+	}
+
+	@:overload
+	override function visitLocalVariable(name:String, descriptor:String, signature:String, start:Label, end:Label, index:Int):Void {
+		target.visitLocalVariable(name, descriptor, signature, start, end, index);
 	}
 
 	@:overload
