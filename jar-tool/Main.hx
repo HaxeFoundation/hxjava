@@ -12,7 +12,11 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
+#if (haxe_ver >= 4.2)
+import org.objectweb.asm.Opcodes as Opcodes_Statics;
+#else
 import org.objectweb.asm.Opcodes.Opcodes_Statics;
+#end
 import sys.FileSystem;
 
 using StringTools;
