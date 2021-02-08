@@ -4,7 +4,7 @@
 	"license":"Public",
 	"tags":["java","core"],
 	"description":"Support library for the Java backend of the Haxe compiler",
-	"version":"4.0.0-alpha",
-	"releasenote":"Update to Java 8",
+	"version":"4.2.0",
+	"releasenote":"Fix for compilation failure when classpath string gets to large",
 	"contributors":["waneck", "HaxeFoundation"]
 }
